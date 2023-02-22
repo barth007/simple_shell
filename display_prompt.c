@@ -1,10 +1,19 @@
 #include "shell.h"
-
+/**
+ * main_prompt - print out the input prompt
+ *Return: void
+**/
 void main_prompt(void)
 {
-	fprintf(stderr, "$ ");
+	_putchar('$');
+	_putchar(' ');
 }
-void error_prompt(void)
+/**
+ * main_prompt2 - print externed input to the stdout
+ *Return: void
+**/
+void main_prompt2(void)
 {
-	fprintf(stderr, ": ");
+	_putchar('>');
+	_putchar(' ');
 }

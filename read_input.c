@@ -1,68 +1,77 @@
 #include "shell.h"
-
-char *read_input(void)
+/**
+ *read_input - read input from stdinput
+ *Return: return ptr to char
+**/
+char *read_input()
 {
-	char buf[1024];
-	char *ptr = NULL;
-	char ptrlen = 0;
-	while(fgets(buf, 1024, stdin))
+	char *ptr, *line, *new_ptr;
+	size_t ptrlen, bufsize,  buflen;
+
+	ptrlen = 0;
+	line = NULL;
+	ptr = NULL;
+	while ((buflen = getline(&line, &bufsize, stdin)) != -1)
 	{
-		int buflen = strlen(buf);
-		if(!ptr)
-		{
-			ptr = malloc(buflen+1);
-		}
+		if (ptr == NULL)
+			ptr = malloc(buflen + 1);
 		else
 		{
-			char *ptr2 = realloc(ptr, ptrlen+buflen+1);
-			if(ptr2)
-			{
-				ptr = ptr2;
-			}
-			else
+			new_ptr = malloc(ptrlen + buflen + 1);
+			if (new_ptr == NULL)
 			{
 				free(ptr);
 				ptr = NULL;
+				break;
 			}
+			_memcpy(new_ptr, ptr, ptrlen);
+			free(ptr);
+			ptr = new_ptr;
 		}
-		if(!ptr)
-		{
-			fprintf(stderr, "error: failed to alloc buffer: %s\n", strerror(errno));
-			return NULL;
-		}
-		strcpy(ptr+ptrlen, buf);
-		if(buf[buflen-1] == '\n')
-		{
-			if(buflen == 1 || buf[buflen-2] != '\\')
-			{
-				return ptr;
-			}
-			ptr[ptrlen+buflen-2] = '\0';
-			buflen -= 2;
-			error_prompt();
-		}
+		_memcpy(ptr + ptrlen, line, buflen);
 		ptrlen += buflen;
+		if (line[buflen - 1] == '\n')
+		{
+			if (buflen == 1 || line[buflen - 2] != '\\')
+			{
+				free(line);
+				return (ptr);
+			}
+			ptr[ptrlen - 2] = '\0';
+			ptrlen -= 2;
+			main_prompt2();
+		}
 	}
-	return ptr;
+	if (line)
+		free(line);
+	return (ptr);
 }
+/**
+ *parse_and_execute - parse into the input and execute command
+ *@src: argument from source_s data type
+ *Return: always int
+**/
 int parse_and_execute(struct source_s *src)
 {
-    skip_white_spaces(src);
-    struct token_s *tok = tokenize(src);
-    if(tok == &eof_token)
-    {
-        return 0;
-    }
-    while(tok && tok != &eof_token)
-    {
-        struct node_s *cmd = parse_simple_command(tok);
-        if(!cmd)
-        {
-            break;
-        }
-        do_simple_command(cmd);
-        free_node_tree(cmd);
-        tok = tokenize(src);
-    }
-    return 1;
+	struct token_s *tok;
+	struct node_s *cmd;
+
+	skip_white_spaces(src);
+	tok = tokenize(src);
+	if (tok == &eof_token)
+	{
+		return (0);
+	}
+	while (tok && tok != &eof_token)
+	{
+		cmd = parse_simple_command(tok);
+		if (!cmd)
+		{
+			break;
+		}
+		do_simple_command(cmd);
+		free_node_tree(cmd);
+		tok = tokenize(src);
+	}
+	return (1);
 }

@@ -1,10 +1,19 @@
 #include "shell.h"
+/**
+ *main - entry point
+ *@argc: argument count to array
+ *@argv: array
+ *Return: 0 for success
+**/
 
 int main(int argc, char *argv[])
 {
+	(void) argc;
+	(void)argv;
 	char *cmd;
-	do
-	{
+	struct source_s src;
+
+	do {
 		main_prompt();
 		cmd = read_input();
 		if (!cmd)
@@ -21,15 +30,13 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-			struct source_s src;
-        		src.buffer   = cmd;
-        		src.bufsize  = strlen(cmd);
-        		src.curpos   = INIT_SRC_POS;
-        		parse_and_execute(&src);
+			src.buffer = cmd;
+			src.bufsize = strlen(cmd);
+			src.curpos = INIT_SRC_POS;
+			parse_and_execute(&src);
 			free(cmd);
 		}
+	} while (TRUE);
 
-	}
-	while (TRUE);
 	exit(EXIT_SUCCESS);
 }
