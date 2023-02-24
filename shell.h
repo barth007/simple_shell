@@ -119,4 +119,8 @@ char *get_path(char *);
 /*-----------------start of self built function------------*/
 char *_memcpy(char *dest, char *src, size_t n);
 int _putchar(char);
+char *_strcpy(char *, char *);
+int _strcmp(char *, char *);
+void *_memset(void *s, int b, ssize_t n);
+size_t _strlen(const char *s);
 #endif
